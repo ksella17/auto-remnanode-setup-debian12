@@ -1,40 +1,38 @@
 #!/bin/bash
 
-echo "=== Тесты VPS / Remnano Node ==="
-
-options=(
-    "Тест на локацию"
-    "Проверка IP на блокировки CheckPlace"
-    "Проверка IP на блокировки Multination"
-    "Модифицированный iperf3 (bench.tlab.pw)"
-    "iperf3 по DigneZzZ (bench.gig.ovh)"
-    "Проверка скорости к зарубежным провайдерам (bench.sh)"
-    "Проверка блокировки аудио в Instagram"
-    "Yabs тест на производительность"
-    "Проверка скорости к российским провайдерам incdev / artydev"
-    "Exit"
-)
-
 while true; do
-    echo ""
-    echo "Выберите тест для запуска (введите номер):"
-    for i in "${!options[@]}"; do
-        printf "%2d) %s\n" $((i+1)) "${options[i]}"
-    done
+  clear
+  echo "🦊 Шпаргалка для теста VPS"
+  echo "Выберите тест:"
+  echo "1) Тест на локацию"
+  echo "2) Проверка IP (CheckPlace)"
+  echo "3) Проверка IP (Multination)"
+  echo "4) Модифицированный iperf3 (n_teslatel)"
+  echo "5) iperf3 тест (DigneZzZ)"
+  echo "6) iperf3 тест (bench.sh, зарубежные)"
+  echo "7) Проверка блокировки аудио Instagram"
+  echo "8) YABS тест на производительность"
+  echo "9) Speedtest incdev (Россия)"
+  echo "10) Speedtest artydev (Россия)"
+  echo "0) Выйти"
+  echo
+  read -p "Введите номер теста: " choice
 
-    read -rp "Введите номер опции: " choice
+  case $choice in
+    1) bash <(wget -qO- https://ipregion.vrnt.xyz) ;;
+    2) bash <(curl -Ls IP.Check.Place) -l en ;;
+    3) bash <(curl -L -s check.unlock.media) -E en -R 0 ;;
+    4) wget -qO- bench.tlab.pw | bash ;;
+    5) wget -qO- bench.gig.ovh | bash ;;
+    6) wget -qO- bench.sh | bash ;;
+    7) bash <(curl -L -s https://bench.openode.xyz/checker_inst.sh) ;;
+    8) curl -sL yabs.sh | bash -s -- -4 ;;
+    9) wget -qO- speedtest.incdev.net | bash ;;
+    10) wget -qO- speedtest.artydev.ru | bash ;;
+    0) echo "Выход..."; exit 0 ;;
+    *) echo "Неверный выбор, попробуйте снова"; sleep 2 ;;
+  esac
 
-    case $choice in
-        1) bash <(wget -qO- https://ipregion.vrnt.xyz) ;;
-        2) bash <(curl -Ls IP.Check.Place) -l en ;;
-        3) bash <(curl -L -s check.unlock.media) -E en -R 0 ;;
-        4) wget -qO- bench.tlab.pw | bash ;;
-        5) wget -qO- bench.gig.ovh | bash ;;
-        6) wget -qO- bench.sh | bash ;;
-        7) bash <(curl -L -s https://bench.openode.xyz/checker_inst.sh) ;;
-        8) curl -sL yabs.sh | bash -s -- -4 ;;
-        9) wget -qO- speedtest.incdev.net | bash; wget -qO- speedtest.artydev.ru | bash ;;
-        10) echo "Выход из тестов."; exit 0 ;;
-        *) echo "Неверный выбор. Введите номер от 1 до ${#options[@]}." ;;
-    esac
+  echo
+  read -p "Нажмите Enter для возврата в меню..."
 done
