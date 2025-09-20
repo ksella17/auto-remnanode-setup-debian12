@@ -6,6 +6,18 @@ echo "=== Установка Remnano Node ==="
 apt-get update
 apt-get install -y sudo curl
 
+# Устанавливаем Docker
+echo "=== Устанавливаем Docker ==="
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+apt-get install -y docker-compose-plugin
+
+# Проверяем, что docker установлен
+if ! command -v docker >/dev/null 2>&1; then
+    echo "Docker не установлен. Скрипт завершен."
+    exit 1
+fi
+
 # Создаем рабочую директорию
 mkdir -p /opt/remnanode
 cd /opt/remnanode || { echo "Не удалось перейти в /opt/remnanode"; exit 1; }
