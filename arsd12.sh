@@ -1,27 +1,30 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "=== Установка Remnano Node ==="
 
-# Обновляем пакеты и ставим curl и sudo
 apt-get update
 apt-get install -y sudo curl
 
-# Создаем рабочую директорию
 mkdir -p /opt/remnanode
 cd /opt/remnanode || { echo "Не удалось перейти в /opt/remnanode"; exit 1; }
 
-# Создаем .env файл с портом
 cat > .env <<EOF
 APP_PORT=20002
 EOF
 
-# Спрашиваем про SSL ключ
-read -rp "Хотите вставить SSL ключ в .env? (y/n): " ADD_SSL
-if [[ "$ADD_SSL" =~ ^[Yy]$ ]]; then
-    read -rp "Вставьте SSL ключ (одной строкой) и нажмите Enter: " SSL_CERT_INPUT
-    echo "Добавляем SSL ключ в .env..."
-    echo "SSL_CERT=\"$SSL_CERT_INPUT\"" >> .env
-fi
+# Вставка SSL ключа
+printf "Хотите вставить SSL ключ в .env? (y/n): "
+read ADD_SSL
+case "$ADD_SSL" in
+  [Yy]*) 
+      printf "Вставьте SSL ключ (одной строкой) и нажмите Enter: "
+      read SSL_CERT_INPUT
+      echo "SSL_CERT=\"$SSL_CERT_INPUT\"" >> .env
+      ;;
+  *) 
+      echo "Пропускаем SSL ключ."
+      ;;
+esac
 
 # Создаем docker-compose.yml
 cat > docker-compose.yml <<EOF
@@ -36,14 +39,16 @@ services:
             - .env
 EOF
 
-# Вопрос о запуске контейнера
-read -rp "Запустить docker-compose.yml сейчас? (y/n): " RUN_DOCKER
-if [[ "$RUN_DOCKER" =~ ^[Yy]$ ]]; then
-    echo "Запускаем контейнер..."
-    docker compose up -d
-    echo "=== Контейнер запущен. Следим за логами... ==="
-    docker compose logs -f
-else
-    echo "Скрипт завершен. Вы можете запустить контейнер позже командой:"
-    echo "cd /opt/remnanode && docker compose up -d"
-fi
+# Запуск контейнера
+printf "Запустить docker-compose.yml сейчас? (y/n): "
+read RUN_DOCKER
+case "$RUN_DOCKER" in
+  [Yy]*) 
+      docker compose up -d
+      docker compose logs -f
+      ;;
+  *) 
+      echo "Скрипт завершен. Вы можете запустить контейнер позже командой:"
+      echo "cd /opt/remnanode && docker compose up -d"
+      ;;
+esac
