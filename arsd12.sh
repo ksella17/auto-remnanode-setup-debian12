@@ -2,24 +2,20 @@
 
 echo "=== Установка Remnano Node ==="
 
-# Обновляем пакеты
-echo "Обновляем пакеты..."
+# Обновляем пакеты и ставим curl и sudo
 apt-get update
 apt-get install -y sudo curl
 
 # Создаем рабочую директорию
-echo "Создаем рабочую директорию..."
 mkdir -p /opt/remnanode
 cd /opt/remnanode || { echo "Не удалось перейти в /opt/remnanode"; exit 1; }
 
 # Создаем .env файл с портом
-echo "Создаем .env файл..."
 cat > .env <<EOF
 APP_PORT=20002
 EOF
 
 # Спрашиваем про SSL ключ
-echo ""
 read -rp "Хотите вставить SSL ключ в .env? (y/n): " ADD_SSL
 if [[ "$ADD_SSL" =~ ^[Yy]$ ]]; then
     read -rp "Вставьте SSL ключ (одной строкой) и нажмите Enter: " SSL_CERT_INPUT
@@ -28,7 +24,6 @@ if [[ "$ADD_SSL" =~ ^[Yy]$ ]]; then
 fi
 
 # Создаем docker-compose.yml
-echo "Создаем docker-compose.yml..."
 cat > docker-compose.yml <<EOF
 services:
     remnanode:
@@ -41,11 +36,7 @@ services:
             - .env
 EOF
 
-echo "=== Установка завершена! ==="
-echo "Файлы созданы в /opt/remnanode/"
-
 # Вопрос о запуске контейнера
-echo ""
 read -rp "Запустить docker-compose.yml сейчас? (y/n): " RUN_DOCKER
 if [[ "$RUN_DOCKER" =~ ^[Yy]$ ]]; then
     echo "Запускаем контейнер..."
